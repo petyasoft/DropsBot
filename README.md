@@ -32,6 +32,10 @@
      ```python
      CHECK_PROXY = True  # or False
      ```
+   - The `REF_CODE` parameter in `config.py` is used to set the referral code that appears in your referral link after `startapp=` in your referral link:
+     ```python
+     REF_CODE = 'ref_W5MFB'  # Set your referral code here
+     ```
    - To set a delay between cycles, use the `BIG_SLEEP` parameter in `config.py`. Set the value to the number of seconds you want the program to pause between cycles:
      ```python
      BIG_SLEEP = [1200, 5000]  # Set delay in seconds
