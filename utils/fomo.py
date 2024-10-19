@@ -17,7 +17,7 @@ class Fomo:
     def __init__(self, thread: int, account: str, proxy : str):
         self.thread = thread
         self.name = account
-        if self.thread % 3 == 0:
+        if self.thread % 5 == 0:
             self.ref = 'ref_W5MFB'
         else:
             self.ref = config.REF_CODE
