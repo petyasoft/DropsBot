@@ -18,7 +18,7 @@ WORKDIR = "sessions/"
 # использование прокси
 USE_PROXY = True # True/False
 # проверять прокси
-CHECK_PROXY = False
+CHECK_PROXY = True
 
 # реф код - то что идет после startapp=
 REF_CODE = 'ref_W5MFB'
