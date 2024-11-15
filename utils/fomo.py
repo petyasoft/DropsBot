@@ -1,6 +1,7 @@
 from pyrogram.raw.functions.messages import RequestAppWebView
 from pyrogram.raw.types import InputBotAppShortName
 
+
 from urllib.parse import unquote
 from utils.core import logger
 from fake_useragent import UserAgent
@@ -93,11 +94,24 @@ class Fomo:
                                 logger.success(f"main | Thread {self.thread} | {self.name} | Заклеймил квест с id : {quest['id']} и получил {quest['reward']} $DPS")
                             await asyncio.sleep(random.uniform(*config.QUEST_SLEEP))
                 
+                quests = await self.get_quests()
+                for type_quests in quests:
+                    if type_quests['name'] == 'Refs':
+                        continue
+                    for quest in type_quests['quests']:
+                        if quest['claimAllowed'] == False and quest['status'] == "NEW":
+                            status = await self.veify_quest(quest_id=quest['id'])
+                            await asyncio.sleep(random.uniform(*config.QUEST_SLEEP))
+                        elif quest['claimAllowed'] == True and quest['status'] == "NEW":
+                            status = await self.claim_quest(quest_id=quest['id'])
+                            if status['status'] == 'OK':
+                                logger.success(f"main | Thread {self.thread} | {self.name} | Заклеймил квест с id : {quest['id']} и получил {quest['reward']} $DPS")
+                            await asyncio.sleep(random.uniform(*config.QUEST_SLEEP))
                 orders = (await self.get_orders())
                 score = orders['totalScore']
                 
                 for period in orders['periods']:
-                    if period['period']['unlockThreshold'] <= score and period['order'] == None:
+                    if period['period']['unlockThreshold'] <= score and "order" not in period:
                         coins = await self.get_coins()
                         coin = random.choice(coins)
                         stats = await self.coin_stats(coin_id=coin['id'])
@@ -110,10 +124,10 @@ class Fomo:
                         else:
                             (await self.create_order(coinId = coin['id'], periodId = period['period']['id'], short = True))
                             logger.info(f"main | Thread {self.thread} | {self.name} | Создал ордер SHORT по монете {coin['symbol']} на {period['period']['hours']} часов")
-                    elif period['order'] != None and period['order']['status'] == 'NOT_WIN':
+                    elif  "order" in period and period['order']['status'] == 'NOT_WIN':
                         await self.check_order(order_id=period['order']['id'])
                         logger.info(f"main | Thread {self.thread} | {self.name} | Не выиграл в ставке на {period['period']['hours']} часов")
-                    elif period['order'] != None and period['order']['status'] == 'CLAIM_AVAILABLE':
+                    elif  "order" in period and period['order']['status'] == 'CLAIM_AVAILABLE':
                         await self.claim_order(order_id=period['order']['id'])
                         logger.success(f"main | Thread {self.thread} | {self.name} | Выиграл в ставке : {period['order']['reward']}")
                     await asyncio.sleep(random.uniform(*config.GAME_SLEEP))
@@ -122,7 +136,7 @@ class Fomo:
                 score = orders['totalScore']
                 
                 for period in orders['periods']:
-                    if period['period']['unlockThreshold'] <= score and period['order'] == None:
+                    if period['period']['unlockThreshold'] <= score and  "order" not in period:
                         coins = await self.get_coins()
                         coin = random.choice(coins)
                         stats = await self.coin_stats(coin_id=coin['id'])
@@ -136,7 +150,7 @@ class Fomo:
                             (await self.create_order(coinId = coin['id'], periodId = period['period']['id'], short = True))
                             logger.info(f"main | Thread {self.thread} | {self.name} | Создал ордер SHORT по монете {coin['symbol']} на {period['period']['hours']} часов")
                         await asyncio.sleep(random.uniform(*config.GAME_SLEEP))
-
+                
                 logger.info(f"main | Thread {self.thread} | {self.name} | круг окончен")
                 await asyncio.sleep(random.uniform(*config.BIG_SLEEP))
             except Exception as err:
