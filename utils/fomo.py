@@ -47,6 +47,7 @@ class Fomo:
         headers = {
             'accept': 'application/json',
             'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+            'app-version': '1.0.0',
             'content-type': 'application/json',
             'origin': 'https://miniapp.dropstab.com',
             'priority': 'u=1, i',
