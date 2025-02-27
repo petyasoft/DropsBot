@@ -268,7 +268,7 @@ class Fomo:
             json_data = {
                 'webAppData': tg_web_data
             }
-
+            self.session.headers['x-tg-data'] = tg_web_data
             response = await self.session.post('https://api.miniapp.dropstab.com/api/auth/login', json=json_data)
             response = await response.json()
             if "jwt" in response:
